@@ -1,73 +1,97 @@
-# React + TypeScript + Vite
+# 🛒 Product Management App — Frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Frontend application for a Product Management CRUD system.  
+This repository contains **only the Frontend**. The Laravel Backend API is maintained in a separate repository.
 
-Currently, two official plugins are available:
+---
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## 📌 Overview
 
-## React Compiler
+This project is a modern React-based frontend that consumes a Laravel REST API.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+The application allows users to:
 
-## Expanding the ESLint configuration
+- View product list
+- Create new products (with image upload)
+- Preview images before submission
+- Navigate between pages
+- Receive success notifications
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+The main goal of this project is to strengthen fullstack integration skills, structured state management, and TypeScript-based development.
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+---
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+## 🧱 Tech Stack
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+- React (Vite)
+- TypeScript
+- TailwindCSS
+- shadcn/ui
+- React Router DOM
+- Native Fetch API
+- Sonner (Toast Notification)
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+---
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+## 🚀 Current Features
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+### ✅ Product Listing
+- Fetch data from external API
+- Render products in a dynamic table
+- Display product images from Laravel storage
+
+### ✅ Create Product
+- Controlled form with scalable state object
+- Image preview before upload
+- Client-side validation
+- Loading state handling
+- Toast notification on success
+- Automatic redirect after creation
+
+### ✅ API Integration
+- Using native Fetch API (no Axios dependency)
+- Proper error handling with TypeScript
+- Structured for environment-based API configuration
+
+### ✅ Storage Integration
+- Supports backend image upload
+- Displays images via Laravel `/storage` public link
+
+---
+
+## 📂 Project Structure (Simplified)
+src/
+├── components/
+├── pages/
+├── types/
+├── routes/
+└── App.tsx
+
+
+
+## 🔌 Backend
+
+This repository contains only the **Frontend**.
+
+The Backend is built with Laravel and runs as a separate REST API service.
+
+---
+
+## 🔮 Next Development Phase
+
+- ✏️ Edit Product feature
+- 🗑 Delete Product feature
+- Refactor API calls into reusable service layer
+- Improve environment configuration for deployment
+
+---
+
+## 🎯 Development Focus
+
+This project focuses on:
+
+- Understanding modern fullstack architecture
+- Building clean, state-driven UI
+- Writing type-safe code with TypeScript
+- Composing modular UI using shadcn
+- Implementing practical CRUD operations with image handling
