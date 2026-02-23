@@ -6,7 +6,10 @@ import {
 import { AppSidebar } from "@/components/ui/app-sidebar"
 import { DashboardPage } from "./page/dashboard-page"
 import { Route, Routes } from "react-router-dom"
-import { CreateProductForm } from "./page/CreateProductForm"
+import CreateProductPage from "./page/CreateProductPage"
+import { Toaster } from "sonner"
+
+
 // import { Route, Routes } from "react-router-dom"
 // import { CreateProductForm } from "./page/CreateProductForm"
 
@@ -16,9 +19,10 @@ function App() {
       
       <AppSidebar />
       <SidebarInset>
+        <Toaster richColors position="top-right" />
          <Routes>
           <Route path="/" element={<DashboardPage />} />
-          <Route path="/create-product" element={<CreateProductForm />} />
+          <Route path="/create-product" element={<CreateProductPage />} />
         </Routes>
       </SidebarInset>
     </SidebarProvider>

@@ -35,7 +35,7 @@ export default function SimpleTable() {
       } catch (error) {
           if (error instanceof Error) {
           console.log(error.message);
-  }
+            }
       }
     };
 
@@ -64,7 +64,11 @@ export default function SimpleTable() {
                   <TableCell>{product.title}</TableCell>
                   <TableCell>{product.description}</TableCell>
                   <TableCell>
-                    {product.image}
+                    <img
+                      src={`http://localhost:8000/storage/${product.image}`}
+                      alt={product.title}
+                      width="80"
+                    />
                   </TableCell>
                 </TableRow>
               ))}

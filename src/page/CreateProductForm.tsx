@@ -1,91 +1,193 @@
-"use client"
-
-import * as React from "react"
+import { useState } from "react"
+import { useNavigate } from "react-router-dom"
+import {
+  Field,
+  FieldContent,
+  FieldDescription,
+  FieldError,
+  FieldGroup,
+  FieldSet,
+  FieldTitle,
+} from "@/components/ui/field" // sesuaikan path
 import { Input } from "@/components/ui/input"
+import { Textarea } from "@/components/ui/textarea"
 import { Button } from "@/components/ui/button"
+import { toast } from "sonner"
 
-export function CreateProductForm() {
-  const [form, setForm] = React.useState({
-    name: "",
-    price: "",
-    stock: "",
-    category: "",
+export default function CreatePostForm() {
+  const navigate = useNavigate()
+  const [loading, setLoading] = useState(false)
+
+  // state untuk form
+  const [form, setForm] = useState({
+    title: "",
     description: "",
+    image: null as File | null,
   })
 
-  
+  const [preview, setPreview] = useState<string | null>(null)
+  const [errors, setErrors] = useState<{
+    title?: string
+    description?: string
+    image?: string
+  }>({})
 
+  //untuk handle input image biar bisa muncul preview setelah input file
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
 
-  function handleChange(
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) {
-    setForm({
-      ...form,
-      [e.target.name]: e.target.value,
-    })
+    if (!file) return
+
+    if (!file.type.startsWith("image/")) {
+      setErrors((prev) => ({ ...prev, image: "File must be an image" }))
+      return
+    }
+
+    setForm((prev) => ({ ...prev, image: file }))
+    setPreview(URL.createObjectURL(file))
+    setErrors((prev) => ({ ...prev, image: undefined }))
   }
 
-  function handleSubmit(e: React.FormEvent) {
-    e.preventDefault()
-    console.log("Product created:", form)
 
-    // nanti bisa diganti API call
+  //untuk handle submit form dengan validasi sederhana
+  const handleSubmit = (e: React.FormEvent) => {
+    setLoading(true)
+
+    e.preventDefault()
+
+    const newErrors: typeof errors = {}
+
+    if (!form.title.trim()) newErrors.title = "Title is required"
+    if (!form.description.trim()) newErrors.description = "Description is required"
+    if (!form.image) newErrors.image = "Image is required"
+
+    setErrors(newErrors)
+
+    if (Object.keys(newErrors).length > 0) return
+
+     const addProducts = async () => {
+     try {
+          const formData = new FormData()
+          formData.append("title", form.title)
+          formData.append("description", form.description)
+          formData.append("image", form.image!)
+
+          const response = await fetch("http://localhost:8000/api/products", {
+            method: "POST",
+            body: formData,
+          })
+
+          if (!response.ok) {
+            throw new Error("Failed to create product")
+          }
+
+          const data = await response.json()
+          console.log("Product created:", data)
+
+          
+          setForm({
+            title: "",
+            description: "",
+            image: null,
+          })
+          setPreview(null)
+          
+           toast.success("Product created successfully 🎉")
+           setTimeout(() => {
+              navigate("/")
+            }, 1200)
+      } catch (error) {
+          if (error instanceof Error) {
+           toast.error("Failed to create product.")
+          }
+      } finally {
+        setLoading(false)
+      }
+     }
+      
+      addProducts();
+
+    // contoh kirim ke backend
+    // eslint-disable-next-line react-hooks/rules-of-hooks
+
+   
   }
 
   return (
-    <div className="max-w-xl">
-      <form
-        onSubmit={handleSubmit}
-        className="space-y-6 rounded-2xl border bg-background p-6 shadow-sm"
-      >
-        <div>
-          <h2 className="text-xl font-semibold">Create Product</h2>
-          <p className="text-sm text-muted-foreground">
-            Add a new product to your inventory
-          </p>
-        </div>
+    <form onSubmit={handleSubmit} className="max-w-xl space-y-6">
+      <FieldSet>
 
-        {/* Product Name */}
-        <div className="space-y-2">
-          <label className="text-sm font-medium">
-            Product Title
-          </label>
-          <Input
-            name="name"
-            placeholder="Macbook Pro M3"
-            value={form.name}
-            onChange={handleChange}
-            required
-          />
-        </div>
+        <FieldGroup>
 
-       
+          {/* TITLE */}
+          <Field>
+            <FieldContent>
+              <FieldTitle>Title</FieldTitle>
+              <Input
+                placeholder="Enter title..."
+                value={form.title}
+                onChange={(e) => setForm((prev) => ({ ...prev, title: e.target.value }))}
+              />
+              <FieldDescription>
+                This will be the name of your product.
+              </FieldDescription>
+              {errors.title && (
+                <FieldError>{errors.title}</FieldError>
+              )}
+            </FieldContent>
+          </Field>
 
+          {/* DESCRIPTION */}
+          <Field>
+            <FieldContent>
+              <FieldTitle>Description</FieldTitle>
+              <Textarea
+                placeholder="Write your description..."
+                value={form.description}
+                onChange={(e) => setForm((prev) => ({ ...prev, description: e.target.value }))}
+              />
+              <FieldDescription>
+                Provide more detailed information.
+              </FieldDescription>
+              {errors.description && (
+                <FieldError>{errors.description}</FieldError>
+              )}
+            </FieldContent>
+          </Field>
 
-        {/* Description */}
-        <div className="space-y-2">
-          <label className="text-sm font-medium">
-            Description
-          </label>
-          <textarea
-            name="description"
-            rows={4}
-            placeholder="Product details..."
-            value={form.description}
-            onChange={handleChange}
-            className="w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-xs focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-          />
-        </div>
+          {/* IMAGE UPLOAD */}
+          <Field>
+            <FieldContent>
+              <FieldTitle>Upload Image</FieldTitle>
+              <Input
+                type="file"
+                accept="image/*"
+                onChange={handleImageChange}
+              />
+              <FieldDescription>
+                Only image files are allowed.
+              </FieldDescription>
+              {errors.image && (
+                <FieldError>{errors.image}</FieldError>
+              )}
 
-        
+              {preview && (
+                <img
+                  src={preview}
+                  alt="Preview"
+                  className="mt-3 h-40 rounded-md object-cover"
+                />
+              )}
+            </FieldContent>
+          </Field>
 
-        {/* Submit */}
-        <div className="flex justify-end">
-          <Button type="submit" size="lg">
-            Create Product
-          </Button>
-        </div>
-      </form>
-    </div>
+        </FieldGroup>
+
+      </FieldSet>
+
+      <Button type="submit" className="w-full" disabled={loading}>
+        {loading ? "Creating..." : "Create Product"}
+      </Button>
+    </form>
   )
 }
