@@ -8,6 +8,7 @@ import { DashboardPage } from "./page/dashboard-page"
 import { Route, Routes } from "react-router-dom"
 import CreateProductPage from "./page/CreateProductPage"
 import { Toaster } from "sonner"
+import EditProductPage from "./page/EditProductPage"
 
 
 // import { Route, Routes } from "react-router-dom"
@@ -23,6 +24,7 @@ function App() {
          <Routes>
           <Route path="/" element={<DashboardPage />} />
           <Route path="/create-product" element={<CreateProductPage />} />
+          <Route path="/edit-product/:id" element={<EditProductPage />} />
         </Routes>
       </SidebarInset>
     </SidebarProvider>

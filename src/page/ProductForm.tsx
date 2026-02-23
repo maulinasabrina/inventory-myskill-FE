@@ -14,24 +14,39 @@ import { Textarea } from "@/components/ui/textarea"
 import { Button } from "@/components/ui/button"
 import { toast } from "sonner"
 
-export default function CreatePostForm() {
+interface ProductFormProps {
+  mode: "create" | "edit"
+  initialData?: {
+    id?: number
+    title: string
+    description: string
+    image?: string
+  }
+}
+
+export default function ProductForm({ mode, initialData }: ProductFormProps) {
   const navigate = useNavigate()
   const [loading, setLoading] = useState(false)
 
   // state untuk form
   const [form, setForm] = useState({
-    title: "",
-    description: "",
+    title: initialData?.title || "",
+    description: initialData?.description || "",
     image: null as File | null,
   })
 
-  const [preview, setPreview] = useState<string | null>(null)
+  const [preview, setPreview] = useState<string | null>(
+    initialData?.image
+      ? `http://localhost:8000/storage/${initialData.image}`
+      : null
+  )
   const [errors, setErrors] = useState<{
     title?: string
     description?: string
     image?: string
   }>({})
 
+ 
   //untuk handle input image biar bisa muncul preview setelah input file
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
@@ -59,7 +74,10 @@ export default function CreatePostForm() {
 
     if (!form.title.trim()) newErrors.title = "Title is required"
     if (!form.description.trim()) newErrors.description = "Description is required"
-    if (!form.image) newErrors.image = "Image is required"
+    if (mode === "create" && !form.image) {
+      alert("Image is required")
+      return
+    }
 
     setErrors(newErrors)
 
@@ -71,11 +89,20 @@ export default function CreatePostForm() {
           formData.append("title", form.title)
           formData.append("description", form.description)
           formData.append("image", form.image!)
+          if (mode === "edit") {
+            formData.append("_method", "PUT")
+          }
 
-          const response = await fetch("http://localhost:8000/api/products", {
-            method: "POST",
-            body: formData,
-          })
+          const response = await fetch(
+            
+             mode === "create"
+              ? "http://localhost:8000/api/products"
+              : `http://localhost:8000/api/products/${initialData?.id}`,
+            {
+              method: mode === "create" ? "POST" : "POST", 
+              body: formData,
+            }
+          )
 
           if (!response.ok) {
             throw new Error("Failed to create product")
@@ -91,14 +118,15 @@ export default function CreatePostForm() {
             image: null,
           })
           setPreview(null)
-          
-           toast.success("Product created successfully 🎉")
+          toast.success("Product " + (mode === "create" ? "created" : "updated") + " successfully 🎉")
+        
+
            setTimeout(() => {
               navigate("/")
             }, 1200)
       } catch (error) {
           if (error instanceof Error) {
-           toast.error("Failed to create product.")
+           toast.error("Failed to " + (mode === "create" ? "create" : "update") + " product: " + error.message)
           }
       } finally {
         setLoading(false)
@@ -110,8 +138,12 @@ export default function CreatePostForm() {
     // contoh kirim ke backend
     // eslint-disable-next-line react-hooks/rules-of-hooks
 
+
+
    
   }
+
+  
 
   return (
     <form onSubmit={handleSubmit} className="max-w-xl space-y-6">
@@ -186,7 +218,13 @@ export default function CreatePostForm() {
       </FieldSet>
 
       <Button type="submit" className="w-full" disabled={loading}>
-        {loading ? "Creating..." : "Create Product"}
+        {loading
+          ? mode === "create"
+            ? "Creating..."
+            : "Updating..."
+          : mode === "create"
+          ? "Create Product"
+          : "Update Product"}
       </Button>
     </form>
   )

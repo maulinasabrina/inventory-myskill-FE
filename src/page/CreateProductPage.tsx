@@ -1,4 +1,4 @@
-import CreatePostForm from "./CreateProductForm"
+import ProductForm from "./ProductForm"
 
 
 export default function CreateProductPage() {
@@ -18,7 +18,7 @@ export default function CreateProductPage() {
 
         {/* Card */}
         <div className="rounded-2xl border bg-background shadow-sm p-6">
-          <CreatePostForm />
+          <ProductForm mode="create" />
         </div>
 
       </div>
